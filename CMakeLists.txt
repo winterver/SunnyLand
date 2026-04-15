@@ -1,14 +1,23 @@
 cmake_minimum_required(VERSION 4.1)
 project(SunnyLand)
 
-if(WIN32)
+if(MSVC)
+    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/GL>)
+    add_link_options($<$<NOT:$<CONFIG:Debug>>:/LTCG>)
     add_compile_options(/wd4819)
+else()
+    add_compile_options($<$<NOT:$<CONFIG:Debug>>:-flto>)
+    add_link_options($<$<NOT:$<CONFIG:Debug>>:-flto>)
+endif()
+
+if(WIN32)
     set(SDL_VULKAN          OFF)
     set(SDL_OPENGL          OFF)
     set(SDL_OPENGLES        OFF)
     set(SDL_RENDER_D3D12    OFF)
 endif()
 set(BUILD_SHARED_LIBS       OFF)
+set(SDL_TEST_LIBRARY        OFF)
 set(SDL_GPU                 OFF)
 set(SDL_CAMERA              OFF)
 set(SDL_JOYSTICK            OFF)
@@ -37,9 +46,15 @@ add_subdirectory(vendor/SDL)
 add_subdirectory(vendor/SDL_ttf)
 add_subdirectory(vendor/SDL_mixer)
 
+add_compile_options(/W4)
+
 add_executable(
     SunnyLand
     main.cpp
+    game_app.h
+    game_app.cpp
+    time.h
+    time.cpp
 )
 target_link_libraries(
     SunnyLand PRIVATE

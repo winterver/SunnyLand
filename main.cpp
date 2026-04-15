@@ -1,6 +1,4 @@
-#include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3_mixer/SDL_mixer.h>
+#include "game_app.h"
 
 #if defined(_WIN32) && !defined(_DEBUG)
  #pragma comment(linker, "/subsystem:windows")
@@ -9,10 +7,6 @@
 
 int main()
 {
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    TTF_Init();
-    MIX_Init();
-    MIX_Quit();
-    TTF_Quit();
-    SDL_Quit();
+    GameApp game_app;
+    game_app.run();
 }
