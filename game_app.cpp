@@ -7,11 +7,31 @@
 GameApp::GameApp() = default;
 GameApp::~GameApp() = default;
 
-void GameApp::run()
+int GameApp::run()
 {
-    if (!init()) {
-        return;
-    }
+    int ret = -1;
+
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+        goto quit;
+
+    if (!TTF_Init())
+        goto sdl_quit;
+
+    if (!MIX_Init())
+        goto ttf_quit;
+
+    window_ = SDL_CreateWindow("SunnyLand", 1360, 768, SDL_WINDOW_HIDDEN);
+    if (window_ == nullptr)
+        goto mix_quit;
+
+    renderer_ = SDL_CreateRenderer(window_, nullptr);
+    if (renderer_ == nullptr)
+        goto win_quit;
+
+    time_ = std::make_unique<Time>();
+
+    SDL_ShowWindow(window_);
+    is_running_ = true;
 
     while (is_running_) {
         time_->update();
@@ -22,50 +42,22 @@ void GameApp::run()
         render();
     }
 
-    close();
-}
-
-bool GameApp::init()
-{
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
-        return false;
-    }
-    TTF_Init();
-    MIX_Init();
-
-    window_ = SDL_CreateWindow("SunnyLand", 1360, 768, SDL_WINDOW_HIDDEN);
-    if (window_ == nullptr) {
-        return false;
-    }
-
-    renderer_ = SDL_CreateRenderer(window_, nullptr);
-    if (renderer_ == nullptr) {
-        return false;
-    }
-
-    time_ = std::make_unique<Time>();
-
-    SDL_ShowWindow(window_);
-    is_running_ = true;
-    return true;
-}
-
-void GameApp::close()
-{
     time_.release();
 
-    if (renderer_ != nullptr) {
-        SDL_DestroyRenderer(renderer_);
-        renderer_ = nullptr;
-    }
-    if (window_ != nullptr) {
-        SDL_DestroyWindow(window_);
-        window_ = nullptr;
-    }
-
+    ret = 0;
+    SDL_DestroyRenderer(renderer_);
+win_quit:
+    SDL_DestroyWindow(window_);
+mix_quit:
     MIX_Quit();
+ttf_quit:
     TTF_Quit();
+sdl_quit:
     SDL_Quit();
+quit:
+    renderer_ = nullptr;
+    window_ = nullptr;
+    return ret;
 }
 
 void GameApp::handleEvents()

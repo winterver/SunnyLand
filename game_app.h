@@ -22,11 +22,9 @@ public:
     GameApp& operator=(GameApp&) = delete;
     GameApp& operator=(GameApp&&) = delete;
 
-    void run();
+    int run();
 
 private:
-    bool init();
-    void close();
     void handleEvents();
     void update(float delta_time);
     void render();

@@ -8,5 +8,5 @@
 int main()
 {
     GameApp game_app;
-    game_app.run();
+    return game_app.run();
 }

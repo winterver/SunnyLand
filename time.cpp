@@ -10,15 +10,6 @@ Time::Time()
 void Time::update()
 {
     frame_time_ += target_interval_;
-    sync();
-
-    Uint64 current_time = SDL_GetTicksNS();
-    delta_time_ = float((current_time - last_time_) / 1e9);
-    last_time_ = current_time;
-}
-
-void Time::sync()
-{
     while (true) {
         Uint64 remaining = 0;
         if (frame_time_ > SDL_GetTicksNS())
@@ -32,6 +23,10 @@ void Time::sync()
 
         SDL_DelayPrecise(remaining - 1000000);
     }
+
+    Uint64 current_time = SDL_GetTicksNS();
+    delta_time_ = float((current_time - last_time_) / 1e9);
+    last_time_ = current_time;
 }
 
 float Time::getDeltaTime() const
