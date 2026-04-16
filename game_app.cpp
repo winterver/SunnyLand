@@ -8,30 +8,59 @@
 GameApp::GameApp() = default;
 GameApp::~GameApp() = default;
 
+namespace {
+
+struct LibSDL
+{
+    bool success = false;
+    LibSDL() { success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); }
+    ~LibSDL() { if (success) SDL_Quit(); }
+};
+
+struct LibTTF
+{
+    bool success = false;
+    LibTTF() { success = TTF_Init(); }
+    ~LibTTF() { if (success) TTF_Quit(); }
+};
+
+struct LibMIX
+{
+    bool success = false;
+    LibMIX() { success = MIX_Init(); }
+    ~LibMIX() { if (success) MIX_Quit(); }
+};
+
+}
+
 int GameApp::run()
 {
-    int ret = -1;
+    LibSDL libsdl;
+    if (!libsdl.success)
+        return -1;
 
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
-        goto quit;
+    LibTTF libttf;
+    if (!libttf.success)
+        return -1;
 
-    if (!TTF_Init())
-        goto sdl_quit;
-
-    if (!MIX_Init())
-        goto ttf_quit;
+    LibMIX libmix;
+    if (!libmix.success)
+        return -1;
 
     window_ = SDL_CreateWindow("SunnyLand", 1360, 768, SDL_WINDOW_HIDDEN);
     if (window_ == nullptr)
-        goto mix_quit;
+        return -1;
+    std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window(window_, SDL_DestroyWindow);
 
     renderer_ = SDL_CreateRenderer(window_, nullptr);
     if (renderer_ == nullptr)
-        goto win_quit;
+        return -1;
+    std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)> renderer(renderer_, SDL_DestroyRenderer);
 
     mixer_ = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
     if (mixer_ == nullptr)
-        goto ren_quit;
+        return -1;
+    std::unique_ptr<MIX_Mixer, void(*)(MIX_Mixer*)> mixer(mixer_, MIX_DestroyMixer);
 
     time_ = std::make_unique<Time>();
     resource_manager_ = std::make_unique<ResourceManager>(renderer_, mixer_);
@@ -51,23 +80,7 @@ int GameApp::run()
     resource_manager_.release();
     time_.release();
 
-    ret = 0;
-    MIX_StopAllTracks(mixer_, 0);
-    MIX_DestroyMixer(mixer_);
-ren_quit:
-    SDL_DestroyRenderer(renderer_);
-win_quit:
-    SDL_DestroyWindow(window_);
-mix_quit:
-    MIX_Quit();
-ttf_quit:
-    TTF_Quit();
-sdl_quit:
-    SDL_Quit();
-quit:
-    renderer_ = nullptr;
-    window_ = nullptr;
-    return ret;
+    return 0;
 }
 
 void GameApp::handleEvents()

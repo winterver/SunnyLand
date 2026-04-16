@@ -34,7 +34,7 @@ SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
         return nullptr;
 
     SDL_Surface* surface = SDL_CreateSurfaceFrom(x, y, SDL_PIXELFORMAT_RGBA8888, pixels, x*4);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer_, surface);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
 
     SDL_DestroySurface(surface);
     stbi_image_free(pixels);
