@@ -1,8 +1,9 @@
 #include "game_app.h"
+#include "time.h"
+#include "resource_manager.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include "time.h"
 
 GameApp::GameApp() = default;
 GameApp::~GameApp() = default;
@@ -28,7 +29,12 @@ int GameApp::run()
     if (renderer_ == nullptr)
         goto win_quit;
 
+    mixer_ = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
+    if (mixer_ == nullptr)
+        goto ren_quit;
+
     time_ = std::make_unique<Time>();
+    resource_manager_ = std::make_unique<ResourceManager>(renderer_, mixer_);
 
     SDL_ShowWindow(window_);
     is_running_ = true;
@@ -42,9 +48,13 @@ int GameApp::run()
         render();
     }
 
+    resource_manager_.release();
     time_.release();
 
     ret = 0;
+    MIX_StopAllTracks(mixer_, 0);
+    MIX_DestroyMixer(mixer_);
+ren_quit:
     SDL_DestroyRenderer(renderer_);
 win_quit:
     SDL_DestroyWindow(window_);
