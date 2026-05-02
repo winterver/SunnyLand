@@ -3,10 +3,6 @@
 #include <SDL3_ttf/SDL_ttf.h> 
 #include <SDL3_mixer/SDL_mixer.h>
 
-#define STBI_ONLY_PNG
-#define STB_IMAGE_IMPLEMENTATION
-#include "vendor/stb_image.h"
-
 ResourceManager::ResourceManager(SDL_Renderer* renderer, MIX_Mixer* mixer)
     : renderer_(renderer)
     , mixer_(mixer)
@@ -27,17 +23,10 @@ SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
     if (it != textures_.end())
         return it->second.get();
 
-    int x, y, channels;
-    stbi_uc* pixels = stbi_load(file_path.c_str(), &x, &y, &channels, STBI_rgb_alpha);
-
-    if (!pixels)
-        return nullptr;
-
-    SDL_Surface* surface = SDL_CreateSurfaceFrom(x, y, SDL_PIXELFORMAT_RGBA8888, pixels, x*4);
+    SDL_Surface* surface = SDL_LoadPNG(file_path.c_str());
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
 
     SDL_DestroySurface(surface);
-    stbi_image_free(pixels);
 
     if (!texture)
         return nullptr;
