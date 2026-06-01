@@ -1,0 +1,10 @@
+if [ "$1" != debug ] && [ "$1" != release ]; then
+    echo "./configure <debug/release>"
+    exit
+fi
+
+if clang -v 2> /dev/null; then
+    CC=clang CXX=clang++ cmake -Bbuild/$1 -DCMAKE_BUILD_TYPE=$1
+else
+    CC=gcc CXX=g++ cmake -Bbuild/$1 -DCMAKE_BUILD_TYPE=$1
+fi

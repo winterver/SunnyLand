@@ -86,11 +86,9 @@ int GameApp::run()
 void GameApp::handleEvents()
 {
     SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_EVENT_QUIT) {
+    while (SDL_PollEvent(&event))
+        if (event.type == SDL_EVENT_QUIT)
             is_running_ = false;
-        }
-    }
 }
 
 void GameApp::update(float delta_time)

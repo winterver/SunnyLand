@@ -1,13 +1,21 @@
 cmake_minimum_required(VERSION 4.1)
 project(SunnyLand)
 
-if(MSVC)
-    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/GL>)
-    add_link_options($<$<NOT:$<CONFIG:Debug>>:/LTCG>)
-    add_compile_options(/wd4819)
-else()
-    add_compile_options($<$<NOT:$<CONFIG:Debug>>:-flto>)
-    add_link_options($<$<NOT:$<CONFIG:Debug>>:-flto>)
+#if(MSVC)
+#    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/GL>)
+#    add_link_options($<$<NOT:$<CONFIG:Debug>>:/LTCG>)
+#    add_compile_options(/wd4819)
+#else()
+#endif()
+
+add_compile_options(-ffunction-sections -fdata-sections)
+add_link_options(-static -Wl,--gc-sections)
+
+if(NOT ${CMAKE_BUILD_TYPE} STREQUAL debug)
+    add_link_options(-s)
+    if(WIN32)
+        add_link_options(-mwindows)
+    endif()
 endif()
 
 if(WIN32)
@@ -34,6 +42,7 @@ set(SDL_OFFSCREEN           OFF)
 set(SDL_RENDER_GPU          OFF)
 set(SDL_TRAY                OFF)
 set(SDL_VIRTUAL_JOYSTICK    OFF)
+set(SDLTTF_VENDORED         ON)
 set(SDLTTF_HARFBUZZ         OFF)
 set(SDLMIXER_VENDORED       OFF)
 set(SDLMIXER_VORBIS_STB     OFF)
@@ -46,7 +55,7 @@ add_subdirectory(vendor/SDL)
 add_subdirectory(vendor/SDL_ttf)
 add_subdirectory(vendor/SDL_mixer)
 
-add_compile_options(/W4)
+add_compile_options(-Wall -Wextra -pedantic)
 
 add_executable(
     SunnyLand
