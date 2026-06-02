@@ -7,7 +7,7 @@ Time::Time(int target_fps)
     setTargetFps(target_fps);
 }
 
-void Time::update()
+float Time::update()
 {
     frame_time_ += target_interval_;
     while (true) {
@@ -27,6 +27,8 @@ void Time::update()
     Uint64 current_time = SDL_GetTicksNS();
     delta_time_ = float((current_time - last_time_) / 1e9);
     last_time_ = current_time;
+
+    return getDeltaTime();
 }
 
 float Time::getDeltaTime() const

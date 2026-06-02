@@ -18,7 +18,7 @@ public:
     Time& operator=(Time&) = delete;
     Time& operator=(Time&&) = delete;
 
-    void update();
+    float update();
 
     float getDeltaTime() const;
     float getDeltaTimeUnscaled() const;

@@ -2,8 +2,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include "time.h"
 #include "resource_manager.h"
+#include "time.h"
 
 GameApp::LibSDL::LibSDL() { success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); }
 GameApp::LibSDL::~LibSDL() { if (success) SDL_Quit(); }
@@ -45,8 +45,7 @@ int GameApp::run()
             if (event.type == SDL_EVENT_QUIT)
                 is_running_ = false;
 
-        time_->update();
-        update(time_->getDeltaTime());
+        update(time_->update());
         render();
     }
 
