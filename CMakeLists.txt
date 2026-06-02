@@ -62,10 +62,10 @@ add_executable(
     main.cpp
     game_app.h
     game_app.cpp
-    time.h
-    time.cpp
     resource_manager.h
     resource_manager.cpp
+    time.h
+    time.cpp
 )
 target_link_libraries(
     SunnyLand PRIVATE

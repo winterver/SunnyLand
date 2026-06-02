@@ -2,9 +2,9 @@
 #include <thread>
 #include <SDL3/SDL_timer.h>
 
-Time::Time()
+Time::Time(int target_fps)
 {
-    setTargetFps(250);
+    setTargetFps(target_fps);
 }
 
 void Time::update()

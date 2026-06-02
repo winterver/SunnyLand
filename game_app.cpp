@@ -33,8 +33,8 @@ int GameApp::run()
     if (window_ == nullptr || renderer_ == nullptr || mixer_ == nullptr)
         return -1;
 
-    time_ = std::make_unique<Time>();
     resource_manager_ = std::make_unique<ResourceManager>(renderer_.get(), mixer_.get());
+    time_ = std::make_unique<Time>(120);
 
     SDL_ShowWindow(window_.get());
     is_running_ = true;

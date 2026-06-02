@@ -11,7 +11,8 @@ class Time
     int target_fps_ = 0;
 
 public:
-    Time();
+    Time(int target_fps);
+
     Time(Time&) = delete;
     Time(Time&&) = delete;
     Time& operator=(Time&) = delete;

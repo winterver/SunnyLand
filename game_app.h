@@ -22,8 +22,8 @@ class GameApp
     std::unique_ptr<SDL_Renderer, RendererDeleter> renderer_;
     std::unique_ptr<MIX_Mixer, MixerDeleter> mixer_;
 
-    std::unique_ptr<Time> time_;
     std::unique_ptr<ResourceManager> resource_manager_;
+    std::unique_ptr<Time> time_;
 
     bool is_running_ = false;
 
