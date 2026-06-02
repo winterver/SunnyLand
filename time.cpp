@@ -2,10 +2,7 @@
 #include <thread>
 #include <SDL3/SDL_timer.h>
 
-Time::Time(int target_fps)
-{
-    setTargetFps(target_fps);
-}
+Time::Time(int target_fps) { setTargetFps(target_fps); }
 
 float Time::update()
 {
@@ -31,25 +28,11 @@ float Time::update()
     return getDeltaTime();
 }
 
-float Time::getDeltaTime() const
-{
-    return delta_time_ * time_scale_;
-}
+float Time::getDeltaTime() const { return delta_time_ * time_scale_; }
+float Time::getDeltaTimeUnscaled() const { return delta_time_; }
 
-float Time::getDeltaTimeUnscaled() const
-{
-    return delta_time_;
-}
-
-void Time::setTimeScale(float scale)
-{
-    time_scale_ = scale > 0 ? scale : 0;
-}
-
-float Time::getTimeScale() const
-{
-    return time_scale_;
-}
+void Time::setTimeScale(float scale) { time_scale_ = scale > 0 ? scale : 0; }
+float Time::getTimeScale() const { return time_scale_; }
 
 void Time::setTargetFps(int fps)
 {
@@ -64,7 +47,4 @@ void Time::setTargetFps(int fps)
     frame_time_ = last_time_;
 }
 
-int Time::getTargetFps() const
-{
-    return target_fps_;
-}
+int Time::getTargetFps() const { return target_fps_; }

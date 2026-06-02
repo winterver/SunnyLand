@@ -41,11 +41,11 @@ public:
     void clear();
 
     SDL_Texture* loadTexture(const std::string& file_path);
-    void unloadTexture(const std::string& file_path);
+    SDL_Texture* getTexture(const std::string& file_path);
 
     TTF_Font* loadFont(const std::string& file_path, float point_size);
-    void unloadFont(const std::string& file_path, float point_size);
+    TTF_Font* getFont(const std::string& file_path, float point_size);
 
     MIX_Audio* loadAudio(const std::string& file_path, bool predecode = false);
-    void unloadAudio(const std::string& file_path);
+    MIX_Audio* getAudio(const std::string& file_path);
 };

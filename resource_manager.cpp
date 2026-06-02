@@ -12,9 +12,7 @@ std::size_t ResourceManager::FontKeyHash::operator()(const FontKey& key) const {
 }
 
 ResourceManager::ResourceManager(SDL_Renderer* renderer, MIX_Mixer* mixer)
-    : renderer_(renderer)
-    , mixer_(mixer)
-{ }
+    : renderer_(renderer), mixer_(mixer) { }
 
 ResourceManager::~ResourceManager() = default;
 
@@ -27,9 +25,7 @@ void ResourceManager::clear()
 
 SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
 {
-    auto it = textures_.find(file_path);
-    if (it != textures_.end())
-        return it->second.get();
+    if (getTexture(file_path)) return getTexture(file_path);
 
     SDL_Surface* surface = SDL_LoadPNG(file_path.c_str());
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
@@ -39,38 +35,31 @@ SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
     return texture;
 }
 
-void ResourceManager::unloadTexture(const std::string& file_path)
+SDL_Texture* ResourceManager::getTexture(const std::string& file_path)
 {
     auto it = textures_.find(file_path);
-    if (it != textures_.end())
-        textures_.erase(it);
+    return it != textures_.end() ? it->second.get() : nullptr;
 }
 
 TTF_Font* ResourceManager::loadFont(const std::string& file_path, float point_size)
 {
-    FontKey key = { file_path, point_size };
-    auto it = fonts_.find(key);
-    if (it != fonts_.end())
-        return it->second.get();
+    if (getFont(file_path, point_size)) return getFont(file_path, point_size);
 
     TTF_Font* font = TTF_OpenFont(file_path.c_str(), point_size);
-    if (font) fonts_.emplace(key, UniquePtrFont(font));
+    if (font) fonts_.emplace(FontKey{file_path, point_size}, UniquePtrFont(font));
 
     return font;
 }
 
-void ResourceManager::unloadFont(const std::string& file_path, float point_size)
+TTF_Font* ResourceManager::getFont(const std::string& file_path, float point_size)
 {
     auto it = fonts_.find({file_path, point_size});
-    if (it != fonts_.end())
-        fonts_.erase(it);
+    return it != fonts_.end() ? it->second.get() : nullptr;
 }
 
 MIX_Audio* ResourceManager::loadAudio(const std::string& file_path, bool predecode)
 {
-    auto it = audios_.find(file_path);
-    if (it != audios_.end())
-        return it->second.get();
+    if (getAudio(file_path)) return getAudio(file_path);
 
     MIX_Audio* audio = MIX_LoadAudio(mixer_, file_path.c_str(), predecode);
     if (audio) audios_.emplace(file_path, UniquePtrAudio(audio));
@@ -78,9 +67,8 @@ MIX_Audio* ResourceManager::loadAudio(const std::string& file_path, bool predeco
     return audio;
 }
 
-void ResourceManager::unloadAudio(const std::string& file_path)
+MIX_Audio* ResourceManager::getAudio(const std::string& file_path)
 {
     auto it = audios_.find(file_path);
-    if (it != audios_.end())
-        audios_.erase(it);
+    return it != audios_.end() ? it->second.get() : nullptr;
 }
