@@ -5,8 +5,10 @@ struct SDL_Window;
 struct SDL_Renderer;
 struct MIX_Mixer;
 
-class Time;
 class ResourceManager;
+class Renderer;
+class Sprite;
+class Time;
 
 class GameApp
 {
@@ -23,8 +25,11 @@ class GameApp
     std::unique_ptr<MIX_Mixer, MixerDeleter> mixer_;
 
     std::unique_ptr<ResourceManager> resource_manager_;
-    std::unique_ptr<Time> time_;
+    std::unique_ptr<Renderer> renderer2_;
 
+    std::unique_ptr<Sprite> sprite_;
+
+    std::unique_ptr<Time> time_;
     bool is_running_ = false;
 
 public:

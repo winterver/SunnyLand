@@ -3,6 +3,8 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include "resource_manager.h"
+#include "renderer.h"
+#include "sprite.h"
 #include "time.h"
 
 GameApp::LibSDL::LibSDL() { success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); }
@@ -34,9 +36,15 @@ int GameApp::run()
         return -1;
 
     resource_manager_ = std::make_unique<ResourceManager>(renderer_.get(), mixer_.get());
-    time_ = std::make_unique<Time>(120);
+    renderer2_ = std::make_unique<Renderer>(renderer_.get());
+
+    auto path = "C:/Data/Develop/LaTaleDoujin/LaTaleDoujin/resources/IRIS.PNG";
+
+    resource_manager_->loadTexture(path);
+    sprite_ = std::make_unique<Sprite>(resource_manager_.get(), path);
 
     SDL_ShowWindow(window_.get());
+    time_ = std::make_unique<Time>(120);
     is_running_ = true;
 
     while (is_running_) {
@@ -58,4 +66,9 @@ void GameApp::update(float delta_time)
 
 void GameApp::render()
 {
+    SDL_RenderClear(renderer_.get());
+
+    renderer2_->drawSprite(sprite_.get(), 0, 0);
+
+    SDL_RenderPresent(renderer_.get());
 }

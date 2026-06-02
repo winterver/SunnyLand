@@ -68,6 +68,8 @@ add_executable(
     time.cpp
     sprite.h
     sprite.cpp
+    renderer.h
+    renderer.cpp
 )
 target_link_libraries(
     SunnyLand PRIVATE
