@@ -11,16 +11,16 @@ struct MIX_Audio;
 
 class ResourceManager
 {
-    using UniquePtrTexture = std::unique_ptr<SDL_Texture, void(*)(SDL_Texture*)>;
-    using UniquePtrFont = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>;
-    using UniquePtrAudio = std::unique_ptr<MIX_Audio, void(*)(MIX_Audio*)>;
+    struct TextureDeleter { void operator()(SDL_Texture* texture) const; };
+    struct FontDeleter { void operator()(TTF_Font* font) const; };
+    struct AudioDeleter { void operator()(MIX_Audio* audio) const; };
+
+    using UniquePtrTexture = std::unique_ptr<SDL_Texture, TextureDeleter>;
+    using UniquePtrFont = std::unique_ptr<TTF_Font, FontDeleter>;
+    using UniquePtrAudio = std::unique_ptr<MIX_Audio, AudioDeleter>;
 
     using FontKey = std::pair<std::string, float>;
-    struct FontKeyHash {
-        std::size_t operator() (const FontKey& key) const {
-            return std::hash<std::string>()(key.first) ^ std::hash<float>()(key.second);
-        }
-    };
+    struct FontKeyHash { std::size_t operator()(const FontKey& key) const; };
 
     std::unordered_map<std::string, UniquePtrTexture> textures_;
     std::unordered_map<FontKey, UniquePtrFont, FontKeyHash> fonts_;
@@ -46,6 +46,6 @@ public:
     TTF_Font* loadFont(const std::string& file_path, float point_size);
     void unloadFont(const std::string& file_path, float point_size);
 
-    MIX_Audio* loadAudio(const std::string& file_path, bool predecode);
+    MIX_Audio* loadAudio(const std::string& file_path, bool predecode = false);
     void unloadAudio(const std::string& file_path);
 };

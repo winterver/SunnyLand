@@ -1,94 +1,56 @@
 #include "game_app.h"
-#include "time.h"
-#include "resource_manager.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
+#include "time.h"
+#include "resource_manager.h"
+
+GameApp::LibSDL::LibSDL() { success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); }
+GameApp::LibSDL::~LibSDL() { if (success) SDL_Quit(); }
+
+GameApp::LibTTF::LibTTF() { success = TTF_Init(); }
+GameApp::LibTTF::~LibTTF() { if (success) TTF_Quit(); }
+
+GameApp::LibMIX::LibMIX() { success = MIX_Init(); }
+GameApp::LibMIX::~LibMIX() { if (success) MIX_Quit(); }
+
+void GameApp::WindowDeleter::operator()(SDL_Window* window) const { SDL_DestroyWindow(window); }
+void GameApp::RendererDeleter::operator()(SDL_Renderer* renderer) const { SDL_DestroyRenderer(renderer); }
+void GameApp::MixerDeleter::operator()(MIX_Mixer* mixer) const { MIX_DestroyMixer(mixer); }
 
 GameApp::GameApp() = default;
 GameApp::~GameApp() = default;
 
-namespace {
-
-struct LibSDL
-{
-    bool success = false;
-    LibSDL() { success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); }
-    ~LibSDL() { if (success) SDL_Quit(); }
-};
-
-struct LibTTF
-{
-    bool success = false;
-    LibTTF() { success = TTF_Init(); }
-    ~LibTTF() { if (success) TTF_Quit(); }
-};
-
-struct LibMIX
-{
-    bool success = false;
-    LibMIX() { success = MIX_Init(); }
-    ~LibMIX() { if (success) MIX_Quit(); }
-};
-
-}
-
 int GameApp::run()
 {
-    LibSDL libsdl;
-    if (!libsdl.success)
+    if (!libsdl_.success || !libttf_.success || !libmix_.success)
         return -1;
 
-    LibTTF libttf;
-    if (!libttf.success)
-        return -1;
+    window_.reset(SDL_CreateWindow("SunnyLand", 1360, 768, SDL_WINDOW_HIDDEN));
+    renderer_.reset(SDL_CreateRenderer(window_.get(), nullptr));
+    mixer_.reset(MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr));
 
-    LibMIX libmix;
-    if (!libmix.success)
+    if (window_ == nullptr || renderer_ == nullptr || mixer_ == nullptr)
         return -1;
-
-    window_ = SDL_CreateWindow("SunnyLand", 1360, 768, SDL_WINDOW_HIDDEN);
-    if (window_ == nullptr)
-        return -1;
-    std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window(window_, SDL_DestroyWindow);
-
-    renderer_ = SDL_CreateRenderer(window_, nullptr);
-    if (renderer_ == nullptr)
-        return -1;
-    std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)> renderer(renderer_, SDL_DestroyRenderer);
-
-    mixer_ = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
-    if (mixer_ == nullptr)
-        return -1;
-    std::unique_ptr<MIX_Mixer, void(*)(MIX_Mixer*)> mixer(mixer_, MIX_DestroyMixer);
 
     time_ = std::make_unique<Time>();
-    resource_manager_ = std::make_unique<ResourceManager>(renderer_, mixer_);
+    resource_manager_ = std::make_unique<ResourceManager>(renderer_.get(), mixer_.get());
 
-    SDL_ShowWindow(window_);
+    SDL_ShowWindow(window_.get());
     is_running_ = true;
 
     while (is_running_) {
-        time_->update();
-        float delta_time = time_->getDeltaTime();
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+            if (event.type == SDL_EVENT_QUIT)
+                is_running_ = false;
 
-        handleEvents();
-        update(delta_time);
+        time_->update();
+        update(time_->getDeltaTime());
         render();
     }
 
-    resource_manager_.release();
-    time_.release();
-
     return 0;
-}
-
-void GameApp::handleEvents()
-{
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-        if (event.type == SDL_EVENT_QUIT)
-            is_running_ = false;
 }
 
 void GameApp::update(float delta_time)

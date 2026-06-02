@@ -3,6 +3,14 @@
 #include <SDL3_ttf/SDL_ttf.h> 
 #include <SDL3_mixer/SDL_mixer.h>
 
+void ResourceManager::TextureDeleter::operator()(SDL_Texture* texture) const { SDL_DestroyTexture(texture); }
+void ResourceManager::FontDeleter::operator()(TTF_Font* font) const { TTF_CloseFont(font); }
+void ResourceManager::AudioDeleter::operator()(MIX_Audio* audio) const { MIX_DestroyAudio(audio); }
+
+std::size_t ResourceManager::FontKeyHash::operator()(const FontKey& key) const {
+    return std::hash<std::string>()(key.first) ^ std::hash<float>()(key.second);
+}
+
 ResourceManager::ResourceManager(SDL_Renderer* renderer, MIX_Mixer* mixer)
     : renderer_(renderer)
     , mixer_(mixer)
@@ -25,13 +33,9 @@ SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
 
     SDL_Surface* surface = SDL_LoadPNG(file_path.c_str());
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
+    if (texture) textures_.emplace(file_path, UniquePtrTexture(texture));
 
     SDL_DestroySurface(surface);
-
-    if (!texture)
-        return nullptr;
-
-    textures_.emplace(file_path, UniquePtrTexture(texture, SDL_DestroyTexture));
     return texture;
 }
 
@@ -50,11 +54,8 @@ TTF_Font* ResourceManager::loadFont(const std::string& file_path, float point_si
         return it->second.get();
 
     TTF_Font* font = TTF_OpenFont(file_path.c_str(), point_size);
+    if (font) fonts_.emplace(key, UniquePtrFont(font));
 
-    if (!font)
-        return nullptr;
-
-    fonts_.emplace(key, UniquePtrFont(font, TTF_CloseFont));
     return font;
 }
 
@@ -72,11 +73,8 @@ MIX_Audio* ResourceManager::loadAudio(const std::string& file_path, bool predeco
         return it->second.get();
 
     MIX_Audio* audio = MIX_LoadAudio(mixer_, file_path.c_str(), predecode);
+    if (audio) audios_.emplace(file_path, UniquePtrAudio(audio));
 
-    if (!audio)
-        return nullptr;
-
-    audios_.emplace(file_path, UniquePtrAudio(audio, MIX_DestroyAudio));
     return audio;
 }
 
