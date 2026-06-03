@@ -4,7 +4,7 @@
 
 struct SDL_Texture;
 
-class ResourceManager;
+class Content;
 
 class Sprite
 {
@@ -12,8 +12,8 @@ class Sprite
     SDL_FRect rect_;
 
 public:
-    Sprite(ResourceManager* resource_manager, const std::string& path);
-    Sprite(ResourceManager* resource_manager, const std::string& path, SDL_FRect rect);
+    Sprite(Content* content, const std::string& path);
+    Sprite(Content* content, const std::string& path, SDL_FRect rect);
 
     SDL_Texture* getTexture() const;
     void setRect(const SDL_FRect& rect);

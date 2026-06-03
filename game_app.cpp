@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include "resource_manager.h"
+#include "content.h"
 #include "renderer.h"
 #include "sprite.h"
 #include "time.h"
@@ -35,13 +35,13 @@ int GameApp::run()
     if (window_ == nullptr || renderer_ == nullptr || mixer_ == nullptr)
         return -1;
 
-    resource_manager_ = std::make_unique<ResourceManager>(renderer_.get(), mixer_.get());
+    content_ = std::make_unique<Content>(renderer_.get(), mixer_.get());
     renderer2_ = std::make_unique<Renderer>(renderer_.get());
 
     auto path = "C:/Data/Develop/LaTaleDoujin/LaTaleDoujin/resources/IRIS.PNG";
 
-    resource_manager_->loadTexture(path);
-    sprite_ = std::make_unique<Sprite>(resource_manager_.get(), path);
+    content_->loadTexture(path);
+    sprite_ = std::make_unique<Sprite>(content_.get(), path);
 
     SDL_ShowWindow(window_.get());
     time_ = std::make_unique<Time>(120);

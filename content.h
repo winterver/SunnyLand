@@ -9,7 +9,7 @@ struct SDL_Texture;
 struct TTF_Font;
 struct MIX_Audio;
 
-class ResourceManager
+class Content
 {
     struct TextureDeleter { void operator()(SDL_Texture* texture) const; };
     struct FontDeleter { void operator()(TTF_Font* font) const; };
@@ -30,13 +30,13 @@ class ResourceManager
     MIX_Mixer* mixer_;
 
 public:
-    ResourceManager(SDL_Renderer* renderer, MIX_Mixer* mixer);
-    ~ResourceManager();
+    Content(SDL_Renderer* renderer, MIX_Mixer* mixer);
+    ~Content();
 
-    ResourceManager(ResourceManager&) = delete;
-    ResourceManager(ResourceManager&&) = delete;
-    ResourceManager& operator=(ResourceManager&) = delete;
-    ResourceManager& operator=(ResourceManager&&) = delete;
+    Content(Content&) = delete;
+    Content(Content&&) = delete;
+    Content& operator=(Content&) = delete;
+    Content& operator=(Content&&) = delete;
 
     void clear();
 

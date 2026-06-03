@@ -62,8 +62,8 @@ add_executable(
     main.cpp
     game_app.h
     game_app.cpp
-    resource_manager.h
-    resource_manager.cpp
+    content.h
+    content.cpp
     time.h
     time.cpp
     sprite.h

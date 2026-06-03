@@ -1,29 +1,29 @@
-#include "resource_manager.h"
+#include "content.h"
 #include <SDL3/SDL_render.h> 
 #include <SDL3_ttf/SDL_ttf.h> 
 #include <SDL3_mixer/SDL_mixer.h>
 
-void ResourceManager::TextureDeleter::operator()(SDL_Texture* texture) const { SDL_DestroyTexture(texture); }
-void ResourceManager::FontDeleter::operator()(TTF_Font* font) const { TTF_CloseFont(font); }
-void ResourceManager::AudioDeleter::operator()(MIX_Audio* audio) const { MIX_DestroyAudio(audio); }
+void Content::TextureDeleter::operator()(SDL_Texture* texture) const { SDL_DestroyTexture(texture); }
+void Content::FontDeleter::operator()(TTF_Font* font) const { TTF_CloseFont(font); }
+void Content::AudioDeleter::operator()(MIX_Audio* audio) const { MIX_DestroyAudio(audio); }
 
-std::size_t ResourceManager::FontKeyHash::operator()(const FontKey& key) const {
+std::size_t Content::FontKeyHash::operator()(const FontKey& key) const {
     return std::hash<std::string>()(key.first) ^ std::hash<float>()(key.second);
 }
 
-ResourceManager::ResourceManager(SDL_Renderer* renderer, MIX_Mixer* mixer)
+Content::Content(SDL_Renderer* renderer, MIX_Mixer* mixer)
     : renderer_(renderer), mixer_(mixer) { }
 
-ResourceManager::~ResourceManager() = default;
+Content::~Content() = default;
 
-void ResourceManager::clear()
+void Content::clear()
 {
     textures_.clear();
     fonts_.clear();
     audios_.clear();
 }
 
-SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
+SDL_Texture* Content::loadTexture(const std::string& file_path)
 {
     if (getTexture(file_path)) return getTexture(file_path);
 
@@ -35,13 +35,13 @@ SDL_Texture* ResourceManager::loadTexture(const std::string& file_path)
     return texture;
 }
 
-SDL_Texture* ResourceManager::getTexture(const std::string& file_path)
+SDL_Texture* Content::getTexture(const std::string& file_path)
 {
     auto it = textures_.find(file_path);
     return it != textures_.end() ? it->second.get() : nullptr;
 }
 
-TTF_Font* ResourceManager::loadFont(const std::string& file_path, float point_size)
+TTF_Font* Content::loadFont(const std::string& file_path, float point_size)
 {
     if (getFont(file_path, point_size)) return getFont(file_path, point_size);
 
@@ -51,13 +51,13 @@ TTF_Font* ResourceManager::loadFont(const std::string& file_path, float point_si
     return font;
 }
 
-TTF_Font* ResourceManager::getFont(const std::string& file_path, float point_size)
+TTF_Font* Content::getFont(const std::string& file_path, float point_size)
 {
     auto it = fonts_.find({file_path, point_size});
     return it != fonts_.end() ? it->second.get() : nullptr;
 }
 
-MIX_Audio* ResourceManager::loadAudio(const std::string& file_path, bool predecode)
+MIX_Audio* Content::loadAudio(const std::string& file_path, bool predecode)
 {
     if (getAudio(file_path)) return getAudio(file_path);
 
@@ -67,7 +67,7 @@ MIX_Audio* ResourceManager::loadAudio(const std::string& file_path, bool predeco
     return audio;
 }
 
-MIX_Audio* ResourceManager::getAudio(const std::string& file_path)
+MIX_Audio* Content::getAudio(const std::string& file_path)
 {
     auto it = audios_.find(file_path);
     return it != audios_.end() ? it->second.get() : nullptr;
