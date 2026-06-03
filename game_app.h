@@ -7,11 +7,13 @@ struct MIX_Mixer;
 
 class Content;
 class Renderer;
-class Sprite;
 class Time;
 
 class GameApp
 {
+    friend class Content;
+    friend class Renderer;
+
     struct LibSDL { bool success = false; LibSDL(); ~LibSDL(); } libsdl_;
     struct LibTTF { bool success = false; LibTTF(); ~LibTTF(); } libttf_;
     struct LibMIX { bool success = false; LibMIX(); ~LibMIX(); } libmix_;
@@ -20,20 +22,27 @@ class GameApp
     struct RendererDeleter { void operator()(SDL_Renderer* renderer) const; };
     struct MixerDeleter { void operator()(MIX_Mixer* mixer) const; };
 
-    std::unique_ptr<SDL_Window, WindowDeleter> window_;
-    std::unique_ptr<SDL_Renderer, RendererDeleter> renderer_;
-    std::unique_ptr<MIX_Mixer, MixerDeleter> mixer_;
+    std::unique_ptr<SDL_Window, WindowDeleter> sdl_window_;
+    std::unique_ptr<SDL_Renderer, RendererDeleter> sdl_renderer_;
+    std::unique_ptr<MIX_Mixer, MixerDeleter> mix_mixer_;
 
+protected:
     std::unique_ptr<Content> content_;
-    std::unique_ptr<Renderer> renderer2_;
-
-    std::unique_ptr<Sprite> sprite_;
-
+    std::unique_ptr<Renderer> renderer_;
     std::unique_ptr<Time> time_;
     bool is_running_ = false;
 
+    virtual void loadContent();
+    virtual void initialize();
+    virtual void update();
+    virtual void render();
+
+    const char* const initial_title;
+    const int initial_width;
+    const int initial_height;
+
 public:
-    GameApp();
+    GameApp(const char* title, int width, int height);
     ~GameApp();
 
     GameApp(GameApp&) = delete;
@@ -42,8 +51,4 @@ public:
     GameApp& operator=(GameApp&&) = delete;
 
     int run();
-
-private:
-    void update(float delta_time);
-    void render();
 };

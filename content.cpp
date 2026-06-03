@@ -1,4 +1,5 @@
 #include "content.h"
+#include "game_app.h"
 #include <SDL3/SDL_render.h> 
 #include <SDL3_ttf/SDL_ttf.h> 
 #include <SDL3_mixer/SDL_mixer.h>
@@ -11,9 +12,7 @@ std::size_t Content::FontKeyHash::operator()(const FontKey& key) const {
     return std::hash<std::string>()(key.first) ^ std::hash<float>()(key.second);
 }
 
-Content::Content(SDL_Renderer* renderer, MIX_Mixer* mixer)
-    : renderer_(renderer), mixer_(mixer) { }
-
+Content::Content(GameApp* app) : renderer_(app->sdl_renderer_.get()), mixer_(app->mix_mixer_.get()) { }
 Content::~Content() = default;
 
 void Content::clear()

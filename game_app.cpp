@@ -1,11 +1,10 @@
 #include "game_app.h"
+#include "content.h"
+#include "renderer.h"
+#include "time.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include "content.h"
-#include "renderer.h"
-#include "sprite.h"
-#include "time.h"
 
 GameApp::LibSDL::LibSDL() { success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); }
 GameApp::LibSDL::~LibSDL() { if (success) SDL_Quit(); }
@@ -20,7 +19,14 @@ void GameApp::WindowDeleter::operator()(SDL_Window* window) const { SDL_DestroyW
 void GameApp::RendererDeleter::operator()(SDL_Renderer* renderer) const { SDL_DestroyRenderer(renderer); }
 void GameApp::MixerDeleter::operator()(MIX_Mixer* mixer) const { MIX_DestroyMixer(mixer); }
 
-GameApp::GameApp() = default;
+void GameApp::loadContent() { }
+void GameApp::initialize() { }
+void GameApp::update() { }
+void GameApp::render() { }
+
+GameApp::GameApp(const char* title, int width, int height)
+    : initial_title(title), initial_width(width), initial_height(height) { }
+
 GameApp::~GameApp() = default;
 
 int GameApp::run()
@@ -28,22 +34,20 @@ int GameApp::run()
     if (!libsdl_.success || !libttf_.success || !libmix_.success)
         return -1;
 
-    window_.reset(SDL_CreateWindow("SunnyLand", 1360, 768, SDL_WINDOW_HIDDEN));
-    renderer_.reset(SDL_CreateRenderer(window_.get(), nullptr));
-    mixer_.reset(MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr));
+    sdl_window_.reset(SDL_CreateWindow(initial_title, initial_width, initial_height, SDL_WINDOW_HIDDEN));
+    sdl_renderer_.reset(SDL_CreateRenderer(sdl_window_.get(), nullptr));
+    mix_mixer_.reset(MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr));
 
-    if (window_ == nullptr || renderer_ == nullptr || mixer_ == nullptr)
+    if (sdl_window_ == nullptr || sdl_renderer_ == nullptr || mix_mixer_ == nullptr)
         return -1;
 
-    content_ = std::make_unique<Content>(renderer_.get(), mixer_.get());
-    renderer2_ = std::make_unique<Renderer>(renderer_.get());
+    content_ = std::make_unique<Content>(this);
+    renderer_ = std::make_unique<Renderer>(this);
 
-    auto path = "C:/Data/Develop/LaTaleDoujin/LaTaleDoujin/resources/IRIS.PNG";
+    this->loadContent();
+    this->initialize();
 
-    content_->loadTexture(path);
-    sprite_ = std::make_unique<Sprite>(content_.get(), path);
-
-    SDL_ShowWindow(window_.get());
+    SDL_ShowWindow(sdl_window_.get());
     time_ = std::make_unique<Time>(120);
     is_running_ = true;
 
@@ -53,22 +57,10 @@ int GameApp::run()
             if (event.type == SDL_EVENT_QUIT)
                 is_running_ = false;
 
-        update(time_->update());
-        render();
+        time_->update();
+        this->update();
+        this->render();
     }
 
     return 0;
-}
-
-void GameApp::update(float delta_time)
-{
-}
-
-void GameApp::render()
-{
-    SDL_RenderClear(renderer_.get());
-
-    renderer2_->drawSprite(sprite_.get(), 0, 0);
-
-    SDL_RenderPresent(renderer_.get());
 }

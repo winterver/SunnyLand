@@ -60,6 +60,8 @@ add_compile_options(-Wall -Wextra -pedantic)
 add_executable(
     SunnyLand
     main.cpp
+    latale_doujin.h
+    latale_doujin.cpp
     game_app.h
     game_app.cpp
     content.h

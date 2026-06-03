@@ -1,9 +1,12 @@
 #include "renderer.h"
+#include "game_app.h"
 #include "sprite.h"
 #include <SDL3/SDL_render.h>
 
-Renderer::Renderer(SDL_Renderer* renderer)
-    : renderer_(renderer) { }
+Renderer::Renderer(GameApp* app) : renderer_(app->sdl_renderer_.get()) { }
+
+void Renderer::clear() { SDL_RenderClear(renderer_); }
+void Renderer::present() { SDL_RenderPresent(renderer_); }
 
 void Renderer::drawSprite(const Sprite* sprite, float x, float y)
 {

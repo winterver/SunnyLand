@@ -28,11 +28,7 @@ float Time::update()
     return getDeltaTime();
 }
 
-float Time::getDeltaTime() const { return delta_time_ * time_scale_; }
-float Time::getDeltaTimeUnscaled() const { return delta_time_; }
-
-void Time::setTimeScale(float scale) { time_scale_ = scale > 0 ? scale : 0; }
-float Time::getTimeScale() const { return time_scale_; }
+float Time::getDeltaTime() const { return delta_time_; }
 
 void Time::setTargetFps(int fps)
 {

@@ -3,11 +3,14 @@
 #include <memory>
 #include <unordered_map>
 
-struct SDL_Renderer;
-struct MIX_Mixer;
 struct SDL_Texture;
 struct TTF_Font;
 struct MIX_Audio;
+
+struct SDL_Renderer;
+struct MIX_Mixer;
+
+class GameApp;
 
 class Content
 {
@@ -30,7 +33,7 @@ class Content
     MIX_Mixer* mixer_;
 
 public:
-    Content(SDL_Renderer* renderer, MIX_Mixer* mixer);
+    Content(GameApp* app);
     ~Content();
 
     Content(Content&) = delete;

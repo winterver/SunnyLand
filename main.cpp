@@ -1,4 +1,4 @@
-#include "game_app.h"
+#include "latale_doujin.h"
 
 //#if defined(_WIN32) && !defined(_DEBUG)
 // #define main WinMain
@@ -6,6 +6,6 @@
 
 int main()
 {
-    GameApp game_app;
-    return game_app.run();
+    LaTaleDoujin app;
+    return app.run();
 }
