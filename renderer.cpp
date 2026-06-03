@@ -8,6 +8,5 @@ Renderer::Renderer(SDL_Renderer* renderer)
 void Renderer::drawSprite(const Sprite* sprite, float x, float y)
 {
     SDL_FRect dst = { x, y, sprite->getRect()->w, sprite->getRect()->h };
-    auto flip = sprite->isFlipped() ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-    SDL_RenderTextureRotated(renderer_, sprite->getTexture(), sprite->getRect(), &dst, 0, nullptr, flip);
+    SDL_RenderTextureRotated(renderer_, sprite->getTexture(), sprite->getRect(), &dst, 0, nullptr, SDL_FLIP_NONE);
 }
