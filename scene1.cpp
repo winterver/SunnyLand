@@ -1,7 +1,7 @@
 #include "scene1.h"
-#include "content.h"
-#include "sprite.h"
-#include "renderer.h"
+#include "jewelstar/content.h"
+#include "jewelstar/sprite.h"
+#include "jewelstar/renderer.h"
 
 Scene1::Scene1(GameApp* app) : Scene(app) { }
 Scene1::~Scene1() = default;

@@ -1,6 +1,5 @@
 #pragma once
-#include "game_app.h"
-#include <memory>
+#include "jewelstar/game_app.h"
 
 class Scene;
 

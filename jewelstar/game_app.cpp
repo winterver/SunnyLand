@@ -20,6 +20,41 @@ void GameApp::WindowDeleter::operator()(SDL_Window* window) const { SDL_DestroyW
 void GameApp::RendererDeleter::operator()(SDL_Renderer* renderer) const { SDL_DestroyRenderer(renderer); }
 void GameApp::MixerDeleter::operator()(MIX_Mixer* mixer) const { MIX_DestroyMixer(mixer); }
 
+SDL_Window* GameApp::sdl_window() { return sdl_window_.get(); }
+SDL_Renderer* GameApp::sdl_renderer() { return sdl_renderer_.get(); }
+MIX_Mixer* GameApp::mix_mixer() { return mix_mixer_.get(); }
+Content* GameApp::content() { return content_.get(); }
+Renderer* GameApp::renderer() { return renderer_.get(); }
+Time* GameApp::time() { return time_.get(); }
+
+void GameApp::changeScene(std::shared_ptr<Scene> scene_) { next_scene_ = scene_; }
+
+void GameApp::loadContent() { }
+void GameApp::initialize() { }
+
+void GameApp::update() {
+    if (exit_on_close_) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+            if (event.type == SDL_EVENT_QUIT)
+                is_running_ = false;
+    }
+    else {
+        SDL_PumpEvents();
+    }
+
+    time_->update();
+
+    if (next_scene_ != nullptr)
+        current_scene_ = std::move(next_scene_);
+
+    current_scene_->update();
+}
+
+void GameApp::render() {
+    current_scene_->render();
+}
+
 GameApp::GameApp(const char* title, int width, int height)
     : initial_title(title), initial_width(width), initial_height(height) { }
 
@@ -58,38 +93,4 @@ int GameApp::run()
     }
 
     return 0;
-}
-
-SDL_Window* GameApp::sdl_window() { return sdl_window_.get(); }
-SDL_Renderer* GameApp::sdl_renderer() { return sdl_renderer_.get(); }
-MIX_Mixer* GameApp::mix_mixer() { return mix_mixer_.get(); }
-Content* GameApp::content() { return content_.get(); }
-Renderer* GameApp::renderer() { return renderer_.get(); }
-Time* GameApp::time() { return time_.get(); }
-void GameApp::changeScene(std::shared_ptr<Scene> scene_) { next_scene_ = scene_; }
-
-void GameApp::loadContent() { }
-void GameApp::initialize() { }
-
-void GameApp::update() {
-    if (exit_on_close_) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-            if (event.type == SDL_EVENT_QUIT)
-                is_running_ = false;
-    }
-    else {
-        SDL_PumpEvents();
-    }
-
-    time_->update();
-
-    if (next_scene_ != nullptr)
-        current_scene_ = std::move(next_scene_);
-
-    current_scene_->update();
-}
-
-void GameApp::render() {
-    current_scene_->render();
 }

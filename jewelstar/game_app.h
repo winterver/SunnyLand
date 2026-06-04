@@ -27,12 +27,14 @@ class GameApp
     std::unique_ptr<Content> content_;
     std::unique_ptr<Renderer> renderer_;
     std::unique_ptr<Time> time_;
-    bool is_running_ = false;
-    bool exit_on_close_ = true;
 
     std::shared_ptr<Scene> empty_scene_;
     std::shared_ptr<Scene> current_scene_;
     std::shared_ptr<Scene> next_scene_;
+
+protected:
+    bool is_running_ = false;
+    bool exit_on_close_ = true;
 
 public:
     SDL_Window* sdl_window();
@@ -41,6 +43,7 @@ public:
     Content* content();
     Renderer* renderer();
     Time* time();
+
     void changeScene(std::shared_ptr<Scene> scene_);
 
     const char* const initial_title;

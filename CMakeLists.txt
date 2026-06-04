@@ -60,20 +60,20 @@ add_compile_options(-Wall -Wextra -pedantic)
 add_executable(
     SunnyLand
 
-    game_app.h
-    game_app.cpp
-    content.h
-    content.cpp
-    renderer.h
-    renderer.cpp
-    time.h
-    time.cpp
-    scene.h
-    scene.cpp
-    empty_scene.h
-    empty_scene.cpp
-    sprite.h
-    sprite.cpp
+    jewelstar/game_app.h
+    jewelstar/game_app.cpp
+    jewelstar/content.h
+    jewelstar/content.cpp
+    jewelstar/renderer.h
+    jewelstar/renderer.cpp
+    jewelstar/time.h
+    jewelstar/time.cpp
+    jewelstar/scene.h
+    jewelstar/scene.cpp
+    jewelstar/empty_scene.h
+    jewelstar/empty_scene.cpp
+    jewelstar/sprite.h
+    jewelstar/sprite.cpp
 
     main.cpp
     latale_doujin.h
