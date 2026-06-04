@@ -2,16 +2,14 @@
 #include "game_app.h"
 #include <memory>
 
-class Sprite;
+class Scene;
 
 class LaTaleDoujin : public GameApp
 {
-    std::unique_ptr<Sprite> sprite_;
+    std::shared_ptr<Scene> scene1_;
 
 protected:
-    virtual void loadContent();
     virtual void initialize();
-    virtual void render();
 
 public:
     LaTaleDoujin();

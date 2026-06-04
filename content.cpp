@@ -12,7 +12,7 @@ std::size_t Content::FontKeyHash::operator()(const FontKey& key) const {
     return std::hash<std::string>()(key.first) ^ std::hash<float>()(key.second);
 }
 
-Content::Content(GameApp* app) : renderer_(app->sdl_renderer_.get()), mixer_(app->mix_mixer_.get()) { }
+Content::Content(GameApp* app) : renderer_(app->sdl_renderer()), mixer_(app->mix_mixer()) { }
 Content::~Content() = default;
 
 void Content::clear()

@@ -3,7 +3,7 @@
 #include "sprite.h"
 #include <SDL3/SDL_render.h>
 
-Renderer::Renderer(GameApp* app) : renderer_(app->sdl_renderer_.get()) { }
+Renderer::Renderer(GameApp* app) : renderer_(app->sdl_renderer()) { }
 
 void Renderer::clear() { SDL_RenderClear(renderer_); }
 void Renderer::present() { SDL_RenderPresent(renderer_); }

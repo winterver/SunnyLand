@@ -59,19 +59,27 @@ add_compile_options(-Wall -Wextra -pedantic)
 
 add_executable(
     SunnyLand
-    main.cpp
-    latale_doujin.h
-    latale_doujin.cpp
+
     game_app.h
     game_app.cpp
     content.h
     content.cpp
-    time.h
-    time.cpp
-    sprite.h
-    sprite.cpp
     renderer.h
     renderer.cpp
+    time.h
+    time.cpp
+    scene.h
+    scene.cpp
+    empty_scene.h
+    empty_scene.cpp
+    sprite.h
+    sprite.cpp
+
+    main.cpp
+    latale_doujin.h
+    latale_doujin.cpp
+    scene1.h
+    scene1.cpp
 )
 target_link_libraries(
     SunnyLand PRIVATE
